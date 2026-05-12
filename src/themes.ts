@@ -1,4 +1,4 @@
-import { readFileSync, existsSync } from 'fs'
+import { readFileSync, existsSync, readdirSync } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
 import type { Config } from './config.js'
@@ -7,7 +7,14 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const THEMES_DIR = join(__dirname, '..', 'themes')
 
 export function getAvailableThemes(): string[] {
-  return ['minimal', 'purple']
+  try {
+    return readdirSync(THEMES_DIR)
+      .filter(f => f.endsWith('.typ'))
+      .map(f => f.slice(0, -4))
+      .sort()
+  } catch {
+    return ['minimal', 'purple']
+  }
 }
 
 export function getThemePath(theme: string): string {
