@@ -460,7 +460,7 @@ ${generateH2(tokens)}
 %%BODY%%
 `;
 }
-const BUILTIN_THEMES = new Set(['minimal', 'purple']);
+const BUILTIN_THEMES = new Set(['minimal', 'purple-typora']);
 export function importTheme(cssPath, overrideName) {
     if (!existsSync(cssPath)) {
         throw new Error(`CSS file not found: ${cssPath}`);

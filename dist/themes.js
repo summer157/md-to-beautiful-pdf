@@ -11,7 +11,7 @@ export function getAvailableThemes() {
             .sort();
     }
     catch {
-        return ['minimal', 'purple'];
+        return ['minimal', 'purple-typora'];
     }
 }
 export function getThemePath(theme) {

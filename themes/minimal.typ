@@ -96,7 +96,7 @@
     inset: (x: 14pt, y: 12pt),
     radius: 5pt,
     width: 100%,
-    breakable: false,
+    breakable: true,
     stroke: 0.5pt + rgb("#e0e0e0"),
   )[
     #set text(
@@ -146,6 +146,18 @@
   fill: (_, y) => if y == 0 { rgb("#f5f5f5") } else { white },
 )
 #show table.cell.where(y: 0): set text(weight: "bold")
+#show table.cell: it => {
+  if it.y == 0 {
+    set align(center + horizon)
+    it
+  } else if it.x == 0 {
+    set align(center + horizon)
+    it
+  } else {
+    set align(left + horizon)
+    it
+  }
+}
 
 // Links
 #show link: it => {

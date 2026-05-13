@@ -4,7 +4,7 @@ import { randomBytes } from 'crypto';
 import chalk from 'chalk';
 import { preprocessMarkdown, extractTitle } from './markdown.js';
 import { buildTypstDocument } from './themes.js';
-import { checkPandoc, checkTypst, runPandoc, compileTypst, unwrapTableFigures } from './typst.js';
+import { checkPandoc, checkTypst, runPandoc, compileTypst, unwrapTableFigures, fixTableColumnWidths } from './typst.js';
 export async function convert(opts) {
     const inputPath = resolve(opts.input);
     if (!existsSync(inputPath)) {
@@ -45,7 +45,7 @@ export async function convert(opts) {
         writeFileSync(tempMdPath, processedMd, 'utf-8');
         // Convert markdown → typst body via pandoc
         process.stdout.write(chalk.gray('  → Running pandoc...\n'));
-        const typstBody = unwrapTableFigures(await runPandoc(tempMdPath));
+        const typstBody = fixTableColumnWidths(unwrapTableFigures(await runPandoc(tempMdPath)));
         // Build full typst document with theme
         process.stdout.write(chalk.gray(`  → Applying theme: ${config.theme}\n`));
         const typstDoc = buildTypstDocument(typstBody, config);

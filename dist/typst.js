@@ -25,6 +25,26 @@ export async function runPandoc(inputPath) {
     ]);
     return result.stdout;
 }
+/**
+ * Replace Pandoc-generated fixed fractional column widths with smarter defaults.
+ *
+ * Pandoc calculates column widths from the ASCII `---` separator lengths in the
+ * Markdown source. This works poorly for CJK-heavy tables or columns that contain
+ * long identifier strings without spaces (e.g. STATE_PRECONNECT), because Typst
+ * cannot break a word mid-character and the cell overflows.
+ *
+ * Replacement rules:
+ *   - 2-column table  → (auto, 1fr)  : first col fits its widest cell, second wraps freely
+ *   - N-column table  → columns: N   : equal distribution, each cell wraps independently
+ */
+export function fixTableColumnWidths(typst) {
+    return typst.replace(/columns:\s*\(([^)]+)\)/g, (_match, inner) => {
+        const count = inner.split(',').filter(s => s.trim() !== '').length;
+        if (count === 2)
+            return 'columns: (auto, 1fr)';
+        return `columns: ${count}`;
+    });
+}
 export function unwrapTableFigures(typst) {
     let out = '';
     let i = 0;

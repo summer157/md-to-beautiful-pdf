@@ -107,7 +107,7 @@
     inset: (x: 14pt, y: 12pt),
     radius: 5pt,
     width: 100%,
-    breakable: false,
+    breakable: true,
     stroke: 0.5pt + border-clr,
   )[
     #set text(
@@ -158,7 +158,21 @@
   inset: (x: 9pt, y: 7pt),
   fill: (_, y) => if y == 0 { table-hdr } else if calc.odd(y) { white } else { table-even },
 )
+// Pandoc 生成表格时会显式传入 align 参数，会覆盖 #set table(align:...)。
+// 用 #show table.cell 在渲染阶段强制对齐，优先级更高。
 #show table.cell.where(y: 0): set text(weight: "bold")
+#show table.cell: it => {
+  if it.y == 0 {
+    set align(center + horizon)   // 表头：水平 + 垂直居中
+    it
+  } else if it.x == 0 {
+    set align(center + horizon)   // 第 0 列（标识符）：水平 + 垂直居中
+    it
+  } else {
+    set align(left + horizon)     // 其余列（内容）：左对齐 + 垂直居中
+    it
+  }
+}
 
 // ── Links ────────────────────────────────────────────────────────────────────
 

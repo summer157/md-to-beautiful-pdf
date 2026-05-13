@@ -97,7 +97,7 @@ program
     const themes = getAvailableThemes();
     console.log(chalk.bold('\n  Available themes:\n'));
     for (const t of themes) {
-        const tag = ['minimal', 'purple'].includes(t) ? chalk.gray(' (built-in)') : chalk.gray(' (imported)');
+        const tag = ['minimal', 'purple-typora'].includes(t) ? chalk.gray(' (built-in)') : chalk.gray(' (imported)');
         console.log(`    ${chalk.cyan(t)}${tag}`);
     }
     console.log();
