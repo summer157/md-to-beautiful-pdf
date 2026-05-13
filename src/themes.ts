@@ -13,7 +13,7 @@ export function getAvailableThemes(): string[] {
       .map(f => f.slice(0, -4))
       .sort()
   } catch {
-    return ['minimal', 'purple']
+    return ['minimal', 'purple-typora']
   }
 }
 

@@ -23,7 +23,7 @@ Verify everything works:
 
 ```bash
 node dist/cli.js themes
-node dist/cli.js examples/basic.md --theme purple --output /tmp/test.pdf
+node dist/cli.js examples/basic.md --theme purple-typora --output /tmp/test.pdf
 ```
 
 ## Development workflow
@@ -56,7 +56,7 @@ tests/
 ## Adding a new theme
 
 1. Create a new `.typ` file in the `themes/` directory (e.g. `themes/ocean.typ`).
-2. Use an existing theme like `themes/purple.typ` as a starting point.
+2. Use an existing theme like `themes/purple-typora.typ` as a starting point.
 3. Test it: `node dist/cli.js examples/basic.md --theme ocean --output /tmp/ocean.pdf`
 4. Add a screenshot of the output to your PR.
 

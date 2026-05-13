@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Smoke test: build the project and convert examples/basic.md with both themes.
+ * Smoke test: build the project and convert examples with the two built-in themes.
  * Run: node tests/smoke.js
  */
 
@@ -41,15 +41,15 @@ run(`node ${cli} examples/basic.md --theme minimal --no-toc --output examples/ou
 check(resolve(root, 'examples/output/basic-minimal.pdf'), 'basic.md → minimal theme PDF generated')
 console.log()
 
-// Test purple theme
-console.log('3. Converting examples/basic.md (purple theme)...')
-run(`node ${cli} examples/basic.md --theme purple --output examples/output/basic-purple.pdf`)
-check(resolve(root, 'examples/output/basic-purple.pdf'), 'basic.md → purple theme PDF generated')
+// Test purple-typora theme
+console.log('3. Converting examples/basic.md (purple-typora theme)...')
+run(`node ${cli} examples/basic.md --theme purple-typora --output examples/output/basic-purple-typora.pdf`)
+check(resolve(root, 'examples/output/basic-purple-typora.pdf'), 'basic.md → purple-typora theme PDF generated')
 console.log()
 
 // Test technical report
 console.log('4. Converting examples/technical-report.md...')
-run(`node ${cli} examples/technical-report.md --theme purple --title "缓存架构方案" --output examples/output/technical-report.pdf`)
+run(`node ${cli} examples/technical-report.md --theme purple-typora --title "缓存架构方案" --output examples/output/technical-report.pdf`)
 check(resolve(root, 'examples/output/technical-report.pdf'), 'technical-report.md → PDF generated')
 console.log()
 

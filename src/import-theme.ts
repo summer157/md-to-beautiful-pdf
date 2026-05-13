@@ -584,7 +584,7 @@ export interface ImportResult {
   tokens: ThemeTokens
 }
 
-const BUILTIN_THEMES = new Set(['minimal', 'purple'])
+const BUILTIN_THEMES = new Set(['minimal', 'purple-typora'])
 
 export function importTheme(cssPath: string, overrideName?: string): ImportResult {
   if (!existsSync(cssPath)) {
