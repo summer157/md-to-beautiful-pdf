@@ -47,6 +47,10 @@
     "pdf",
     "typst",
     "pandoc",
+    "typora",
+    "typst-template",
+    "typst-theme",
+    "markdown-to-pdf",
     "cli"
   ],
   "license": "MIT"

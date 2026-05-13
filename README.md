@@ -1,169 +1,174 @@
 # md-to-beautiful-pdf
 
+把 Markdown 转换成分页自然、视觉漂亮、适合分享的精排 PDF。
+
 Turn Markdown into polished, well-paginated PDFs with Typst templates.
 
-**中文**：把 Markdown 转换成分页自然、视觉漂亮、适合分享的精排 PDF。
-
-`md-to-beautiful-pdf` is a small CLI for people who like writing in Markdown
-but want better final PDFs than a browser-style export usually provides. It
-uses Pandoc to translate Markdown into Typst, then applies a print-oriented
-Typst theme and compiles the result to PDF.
+`md-to-beautiful-pdf` 是一个命令行工具：输入一份 `.md` 文档，输出一份对应的 `.pdf`。它用 Pandoc 把 Markdown 转成 Typst，再套用面向 PDF 排版的 Typst 主题，最后由 Typst 编译生成 PDF。
 
 ```text
-Markdown (.md) -> Pandoc -> Typst template -> PDF
+Markdown (.md) -> Pandoc -> Typst theme -> PDF
 ```
 
-## Why
+## 适合谁
 
-Markdown editors such as Typora are excellent for writing and previewing, but
-CSS themes are designed for scrolling documents. PDF is paginated, so direct
-exports often produce awkward page breaks, stranded headings, and tables that
-leave large blank areas.
+如果你习惯用 Typora、Obsidian、VS Code 或其他编辑器写 Markdown，但希望导出的 PDF 更像正式文档、技术报告、讲义或分享稿，这个工具就是为这个场景做的。
 
-This project treats Typst as the final typesetting engine. The goal is not to
-copy every Typora CSS rule exactly, but to create PDF themes inspired by those
-styles while keeping pagination readable.
+它解决的主要问题是：
 
-## Features
+- 标题孤零零地卡在页底。
+- 表格被整体推到下一页，前一页留下大量空白。
+- 代码块、引用块、图片和正文间距不协调。
+- Typora CSS 主题适合滚动阅读，但不一定适合分页 PDF。
 
-- Convert one Markdown file into one PDF.
-- Built-in `minimal` and `purple` themes.
-- Import Typora CSS themes into Typst themes with `mdpdf import-theme`.
-- List available themes with `mdpdf themes`.
-- Automatic title detection from the first H1.
-- Optional table of contents.
-- Page headers, footers, and page numbers.
-- Better table pagination by unwrapping Pandoc table figures into native Typst
-  tables.
-- Manual page break comments for long documents.
-- Local images supported through Typst's root handling.
+这个项目不是“100% 复刻 Typora 导出”。它的目标是把 Typora 主题的视觉风格重新实现为 Typst 模板，让 PDF 分页更自然。
 
-## Requirements
+## 功能特性
 
-Install these tools first:
+- 一条命令把一个 Markdown 文件导出成一个 PDF。
+- 内置 `minimal` 和 `purple` 主题。
+- 支持导入 Typora CSS 主题：`mdpdf import-theme <css>`。
+- 支持查看全部主题：`mdpdf themes`。
+- 自动从第一个 H1 标题识别文档标题。
+- 支持目录、页眉、页脚和页码。
+- 支持中文文档。
+- 支持 Markdown 表格、代码块、引用块、列表和本地图片。
+- 对 Pandoc 生成的表格做后处理，让 Typst 可以自然跨页分页。
+- 支持手动分页标记。
 
-| Tool | Version | macOS install |
+## 环境要求
+
+请先安装：
+
+| 工具 | 版本 | macOS 安装方式 |
 | --- | --- | --- |
 | Node.js | 18+ | <https://nodejs.org> |
-| Pandoc | recent | `brew install pandoc` |
-| Typst | recent | `brew install typst` |
+| Pandoc | 较新版本 | `brew install pandoc` |
+| Typst | 较新版本 | `brew install typst` |
 
-If `pandoc` or `typst` is missing, the CLI prints a clear error message.
+如果缺少 `pandoc` 或 `typst`，CLI 会给出明确错误提示。
 
-## Installation
+## 安装
 
-From npm, once published:
+从 npm 安装：
 
 ```bash
 npm install -g md-to-beautiful-pdf
 ```
 
-From this repository:
+也可以直接从 GitHub 使用：
 
 ```bash
 git clone git@github.com:summer157/md-to-beautiful-pdf.git
 cd md-to-beautiful-pdf
 npm install
 npm run build
-```
-
-Run locally from the repository:
-
-```bash
 node dist/cli.js examples/basic.md --theme purple
 ```
 
-## Usage
+## 基本用法
 
-Basic conversion:
+导出 PDF：
 
 ```bash
 mdpdf input.md
 ```
 
-This writes `input.pdf` next to `input.md`.
+默认会在 `input.md` 同目录生成：
 
-Choose a theme and output path:
+```text
+input.pdf
+```
+
+指定主题和输出路径：
 
 ```bash
 mdpdf input.md --theme purple --output report.pdf
 ```
 
-Full example:
+完整示例：
 
 ```bash
 mdpdf input.md \
   --output report.pdf \
   --theme purple-typora \
   --paper a4 \
-  --title "Project Design" \
+  --title "项目设计文档" \
   --author "Summer" \
   --toc
 ```
 
-### Options
+## 命令参数
 
-| Option | Default | Description |
+| 参数 | 默认值 | 说明 |
 | --- | --- | --- |
-| `input.md` | required | Input Markdown file |
-| `-o, --output <path>` | same name as input | Output PDF path |
-| `--theme <name>` | `minimal` | Theme name |
-| `--paper <size>` | `a4` | Typst paper size. `letter` is accepted as an alias for `us-letter` |
-| `--toc` / `--no-toc` | `--toc` | Show or hide the table of contents |
-| `--title <text>` | first H1 | Override document title |
-| `--author <text>` | empty | Document author |
-| `--date <text>` | empty | Document date |
-| `--keep-typ` | off | Keep the intermediate `.typ` file for debugging |
+| `input.md` | 必填 | 输入 Markdown 文件 |
+| `-o, --output <path>` | 与输入同名 | 输出 PDF 路径 |
+| `--theme <name>` | `minimal` | 主题名称 |
+| `--paper <size>` | `a4` | Typst 纸张尺寸，`letter` 会自动映射为 `us-letter` |
+| `--toc` / `--no-toc` | `--toc` | 显示或隐藏目录 |
+| `--title <text>` | 第一个 H1 | 覆盖文档标题 |
+| `--author <text>` | 空 | 文档作者 |
+| `--date <text>` | 空 | 文档日期 |
+| `--keep-typ` | 关闭 | 保留中间 `.typ` 文件，方便调试主题 |
 
-## Themes
+## 主题
 
-List all available themes:
+查看全部可用主题：
 
 ```bash
 mdpdf themes
 ```
 
-Built-in themes:
+内置主题：
 
-- `minimal`: clean, restrained, print-friendly.
-- `purple`: purple accent, readable headings, styled code and tables.
+- `minimal`：克制、干净、适合打印。
+- `purple`：紫色强调色，适合技术说明和分享文档。
 
-This repository also includes several imported Typora-inspired themes, including
-`purple-typora`. Imported themes are normal `.typ` files under `themes/`, so you
-can edit them by hand after generation.
+仓库里还包含一些 Typora 风格导入主题，例如 `purple-typora`。这些主题都是普通 `.typ` 文件，位于 `themes/` 目录，可以按需手动修改。
 
-## Import Typora CSS Themes
+## 导入 Typora CSS 主题
 
-You can convert a Typora CSS theme into a Typst theme:
+导入 Typora 主题：
 
 ```bash
 mdpdf import-theme "/Users/summer/Library/Application Support/abnerworks.Typora/themes/purple.css"
 ```
 
-If the CSS file is named `purple.css`, the generated theme is named
-`purple-typora` to avoid overwriting the built-in `purple` theme.
+如果 CSS 文件名是 `purple.css`，工具会自动生成：
 
-Use a custom name:
+```text
+themes/purple-typora.typ
+```
+
+这样不会覆盖内置的 `purple` 主题。
+
+指定主题名称：
 
 ```bash
 mdpdf import-theme purple.css --name typora-purple
 ```
 
-Then convert with it:
+使用导入后的主题：
 
 ```bash
 mdpdf input.md --theme typora-purple
 ```
 
-The importer extracts CSS variables, common color aliases, fonts, inline code
-colors, code block colors, blockquote styling, table colors, and simple heading
-decorations such as centered H1 rules or H2 left borders. It is intentionally a
-best-effort converter: CSS is for browser layout, while Typst is for paginated
-typesetting.
+导入器会尽力提取：
 
-## Configuration
+- `:root` 中的 CSS 变量。
+- 常见颜色变量，例如 `--title-color`、`--accent-color`、`--primary-color`。
+- `#hex`、`rgb()`、`rgba()` 颜色。
+- 正文、标题和代码字体。
+- 行内代码、代码块、引用块、表格颜色。
+- H1 居中和下划线、H2 左边框和底边框等标题装饰。
 
-Create `mdpdf.config.json` next to your Markdown file:
+CSS 是浏览器布局语言，Typst 是分页排版语言，所以导入结果是“风格迁移”，不是像素级复刻。
+
+## 配置文件
+
+可以在 Markdown 文件同目录创建 `mdpdf.config.json`：
 
 ```json
 {
@@ -175,23 +180,23 @@ Create `mdpdf.config.json` next to your Markdown file:
 }
 ```
 
-CLI options override the config file.
+命令行参数会覆盖配置文件。
 
-## Manual Page Control
+## 手动分页
 
-Force a page break:
+强制分页：
 
 ```markdown
 <!-- pagebreak -->
 ```
 
-Add a weak keep-next hint:
+弱提示：让下一段尽量跟当前块保持在一起：
 
 ```markdown
 <!-- keep-next -->
 ```
 
-## Examples
+## 示例
 
 ```bash
 mdpdf examples/basic.md --theme minimal
@@ -199,7 +204,7 @@ mdpdf examples/basic.md --theme purple
 mdpdf examples/technical-report.md --theme purple --title "架构设计方案"
 ```
 
-## Development
+## 开发
 
 ```bash
 npm install
@@ -207,7 +212,7 @@ npm run build
 npm test
 ```
 
-Useful commands:
+常用调试命令：
 
 ```bash
 node dist/cli.js themes
@@ -215,21 +220,48 @@ node dist/cli.js import-theme ./purple.css --name purple-typora
 node dist/cli.js examples/basic.md --theme purple-typora --keep-typ
 ```
 
-Before publishing an npm package, build first:
+发布 npm 包前建议先执行：
 
 ```bash
 npm run build
-npm pack
+npm pack --dry-run
 ```
 
-## Notes
+## 常见问题
 
-- Some systems may warn about missing fonts such as `Open Sans`,
-  `JetBrains Mono`, or `Noto Sans CJK SC`. Typst falls back to available fonts,
-  and the PDF can still be generated.
-- For the best Chinese output, install a good CJK font such as PingFang SC,
-  Noto Sans CJK SC, or Source Han Sans SC.
-- Very complex HTML embedded in Markdown is outside the current scope.
+### 其他人可以直接用这个仓库实现 Markdown 转 PDF 吗？
+
+可以。只要对方安装了 Node.js、Pandoc 和 Typst，就可以 clone 这个仓库，执行 `npm install && npm run build`，然后用 `node dist/cli.js input.md` 转 PDF。发布到 npm 后，也可以直接 `npm install -g md-to-beautiful-pdf` 使用 `mdpdf` 命令。
+
+### 出现 unknown font family warning 怎么办？
+
+这是 Typst 提示当前系统缺少某些字体，例如 `Open Sans`、`JetBrains Mono` 或 `Noto Sans CJK SC`。通常不会影响 PDF 生成。想要更好的中文效果，可以安装 PingFang SC、Noto Sans CJK SC 或 Source Han Sans SC。
+
+### 为什么不直接使用 Typora CSS 导出？
+
+CSS 主题主要服务于屏幕滚动阅读；PDF 是分页排版。这个项目用 Typst 重新实现主题，是为了更好地处理页眉页脚、目录、表格跨页和标题分页。
+
+## English
+
+`md-to-beautiful-pdf` is a CLI that converts one Markdown file into one polished PDF. It uses Pandoc for Markdown-to-Typst conversion, applies a Typst theme, then compiles the final PDF with Typst.
+
+Quick start:
+
+```bash
+npm install -g md-to-beautiful-pdf
+mdpdf input.md --theme purple --output report.pdf
+```
+
+Import a Typora CSS theme:
+
+```bash
+mdpdf import-theme purple.css --name typora-purple
+mdpdf input.md --theme typora-purple
+```
+
+Requirements: Node.js 18+, Pandoc, and Typst.
+
+This project does not attempt to replicate Typora CSS pixel by pixel. It ports the visual style into Typst so the final PDF can have better pagination.
 
 ## License
 
