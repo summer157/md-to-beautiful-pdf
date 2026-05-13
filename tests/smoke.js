@@ -53,8 +53,14 @@ run(`node ${cli} examples/technical-report.md --theme purple --title "缓存架�
 check(resolve(root, 'examples/output/technical-report.pdf'), 'technical-report.md → PDF generated')
 console.log()
 
+// Test letter paper alias
+console.log('5. Converting examples/basic.md with --paper letter...')
+run(`node ${cli} examples/basic.md --theme purple-typora --paper letter --no-toc --output examples/output/basic-letter.pdf`)
+check(resolve(root, 'examples/output/basic-letter.pdf'), 'letter paper alias generated a PDF')
+console.log()
+
 // Test missing dependency detection (expect failure with clear message)
-console.log('5. Checking missing input file error...')
+console.log('6. Checking missing input file error...')
 try {
   execSync(`node ${cli} nonexistent.md`, { cwd: root, stdio: 'pipe' })
   console.error('  ✗ FAIL: expected error for missing input file')

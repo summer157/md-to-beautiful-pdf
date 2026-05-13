@@ -322,11 +322,9 @@ function generateH1(t: ThemeTokens): string {
     return `#show heading.where(level: 1): it => {
   block(above: 2em, below: 1.2em, sticky: true)[
     #set text(size: 22pt, weight: ${weight}, fill: ${accent})
-    #align(center)[
-      #it.body
-      #v(0.3em)
-      #line(length: 5em, stroke: 2pt + ${accent})
-    ]
+    #align(center)[#it.body]
+    #v(0.35em)
+    #line(length: 100%, stroke: 0.7pt + ${accent})
   ]
 }`
   }
@@ -421,7 +419,7 @@ export function generateTypstTheme(tokens: ThemeTokens): string {
 #set document(title: doc-title, author: doc-author)
 
 #set page(
-  paper: "a4",
+  paper: "%%PAPER%%",
   margin: (top: 2.5cm, bottom: 2.5cm, left: 3cm, right: 3cm),
   header: context {
     if counter(page).get().first() > 1 {
@@ -556,7 +554,9 @@ ${generateH2(tokens)}
 
 // ── Figures / Images ─────────────────────────────────────────────────────────
 
-#show figure: set block(breakable: false)
+#show figure.where(kind: table): it => {
+  block(width: 100%, breakable: true)[#it.body]
+}
 #set figure(gap: 0.7em)
 #show figure.caption: set text(size: 9pt, fill: light-text, style: "italic")
 #show image: it => { set image(width: 100%); it }

@@ -1,20 +1,31 @@
 {
   "name": "md-to-beautiful-pdf",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Turn Markdown into polished, well-paginated PDFs with Typst templates.",
   "type": "module",
   "bin": {
     "mdpdf": "./dist/cli.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/summer157/md-to-beautiful-pdf.git"
+  },
+  "bugs": {
+    "url": "https://github.com/summer157/md-to-beautiful-pdf/issues"
+  },
+  "homepage": "https://github.com/summer157/md-to-beautiful-pdf#readme",
   "files": [
     "dist",
-    "themes"
+    "themes",
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
     "start": "node dist/cli.js",
-    "test": "node tests/smoke.js"
+    "test": "node tests/smoke.js",
+    "prepack": "npm run build"
   },
   "dependencies": {
     "chalk": "^5.3.0",

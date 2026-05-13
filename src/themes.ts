@@ -32,6 +32,11 @@ function escapeTypstString(s: string): string {
   return s.replace(/\\/g, '\\\\').replace(/"/g, '\\"')
 }
 
+function normalizeTypstPaper(paper: string): string {
+  if (paper.toLowerCase() === 'letter') return 'us-letter'
+  return paper
+}
+
 /** Build the preamble block: visual title/author display + optional TOC */
 function buildPreamble(config: Config): string {
   const parts: string[] = []
@@ -90,6 +95,7 @@ export function buildTypstDocument(
   template = template.replace(/%%DOC_TITLE%%/g, escapeTypstString(title))
   template = template.replace(/%%DOC_AUTHOR%%/g, escapeTypstString(author))
   template = template.replace(/%%DOC_DATE%%/g, escapeTypstString(date))
+  template = template.replace(/%%PAPER%%/g, escapeTypstString(normalizeTypstPaper(config.paper)))
   template = template.replace(/%%HEADER_TITLE%%/g, escapeTypstContent(title))
   template = template.replace(/%%PREAMBLE%%/g, buildPreamble(config))
   template = template.replace(/%%BODY%%/g, body)

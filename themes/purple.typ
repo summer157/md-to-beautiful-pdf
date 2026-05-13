@@ -10,7 +10,7 @@
 #set document(title: doc-title, author: doc-author)
 
 #set page(
-  paper: "a4",
+  paper: "%%PAPER%%",
   margin: (top: 2.5cm, bottom: 2.5cm, left: 3cm, right: 3cm),
   header: context {
     if counter(page).get().first() > 1 {

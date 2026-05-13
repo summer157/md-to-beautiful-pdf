@@ -4,185 +4,232 @@ Turn Markdown into polished, well-paginated PDFs with Typst templates.
 
 **中文**：把 Markdown 转换成分页自然、视觉漂亮、适合分享的精排 PDF。
 
----
+`md-to-beautiful-pdf` is a small CLI for people who like writing in Markdown
+but want better final PDFs than a browser-style export usually provides. It
+uses Pandoc to translate Markdown into Typst, then applies a print-oriented
+Typst theme and compiles the result to PDF.
 
-## Why This Exists
+```text
+Markdown (.md) -> Pandoc -> Typst template -> PDF
+```
 
-Typora is great for writing and previewing. Typst is better for final PDF typesetting. This project connects the two workflows.
+## Why
 
-When you export a Markdown document directly from Typora, you often get:
+Markdown editors such as Typora are excellent for writing and previewing, but
+CSS themes are designed for scrolling documents. PDF is paginated, so direct
+exports often produce awkward page breaks, stranded headings, and tables that
+leave large blank areas.
 
-- Headings stranded alone at the bottom of a page
-- Tables and code blocks sliced awkwardly across page breaks
-- Inconsistent spacing around images
+This project treats Typst as the final typesetting engine. The goal is not to
+copy every Typora CSS rule exactly, but to create PDF themes inspired by those
+styles while keeping pagination readable.
 
-This tool routes your Markdown through **Typst** — a modern typesetting engine built for paginated output — and applies clean, well-crafted themes that handle all of this automatically.
+## Features
 
-> This project is **not** a Typora CSS replicator. It borrows visual inspiration from Typora themes but reimplements them in Typst for proper print-quality pagination.
-
----
+- Convert one Markdown file into one PDF.
+- Built-in `minimal` and `purple` themes.
+- Import Typora CSS themes into Typst themes with `mdpdf import-theme`.
+- List available themes with `mdpdf themes`.
+- Automatic title detection from the first H1.
+- Optional table of contents.
+- Page headers, footers, and page numbers.
+- Better table pagination by unwrapping Pandoc table figures into native Typst
+  tables.
+- Manual page break comments for long documents.
+- Local images supported through Typst's root handling.
 
 ## Requirements
 
-Before using this tool, install:
+Install these tools first:
 
-| Tool | Install |
-|------|---------|
-| **Node.js** ≥ 18 | https://nodejs.org |
-| **pandoc** | `brew install pandoc` · https://pandoc.org/installing.html |
-| **typst** | `brew install typst` · https://github.com/typst/typst/releases |
+| Tool | Version | macOS install |
+| --- | --- | --- |
+| Node.js | 18+ | <https://nodejs.org> |
+| Pandoc | recent | `brew install pandoc` |
+| Typst | recent | `brew install typst` |
 
-If either `pandoc` or `typst` is missing, the CLI will tell you clearly.
-
----
+If `pandoc` or `typst` is missing, the CLI prints a clear error message.
 
 ## Installation
+
+From npm, once published:
 
 ```bash
 npm install -g md-to-beautiful-pdf
 ```
 
-Or use it without installing:
+From this repository:
 
 ```bash
-npx md-to-beautiful-pdf input.md
+git clone git@github.com:summer157/md-to-beautiful-pdf.git
+cd md-to-beautiful-pdf
+npm install
+npm run build
 ```
 
----
+Run locally from the repository:
+
+```bash
+node dist/cli.js examples/basic.md --theme purple
+```
 
 ## Usage
 
+Basic conversion:
+
 ```bash
-# Basic usage — outputs input.pdf next to input.md
 mdpdf input.md
+```
 
-# Choose a theme
-mdpdf input.md --theme purple
+This writes `input.pdf` next to `input.md`.
 
-# Full options
+Choose a theme and output path:
+
+```bash
+mdpdf input.md --theme purple --output report.pdf
+```
+
+Full example:
+
+```bash
 mdpdf input.md \
   --output report.pdf \
-  --theme purple \
+  --theme purple-typora \
+  --paper a4 \
   --title "Project Design" \
-  --author "Your Name" \
+  --author "Summer" \
   --toc
 ```
 
-### All Options
+### Options
 
 | Option | Default | Description |
-|--------|---------|-------------|
-| `input.md` | — | Input Markdown file |
-| `--output <path>` | Same name as input | Output PDF path |
-| `--theme <name>` | `minimal` | Theme: `minimal` or `purple` |
-| `--paper <size>` | `a4` | Paper size: `a4` or `letter` |
-| `--toc` / `--no-toc` | `--toc` | Show/hide table of contents |
-| `--title <text>` | First H1 heading | Override document title |
-| `--author <text>` | Empty | Document author |
-| `--date <text>` | Empty | Document date |
-| `--keep-typ` | Off | Keep the intermediate `.typ` file |
-
----
+| --- | --- | --- |
+| `input.md` | required | Input Markdown file |
+| `-o, --output <path>` | same name as input | Output PDF path |
+| `--theme <name>` | `minimal` | Theme name |
+| `--paper <size>` | `a4` | Typst paper size. `letter` is accepted as an alias for `us-letter` |
+| `--toc` / `--no-toc` | `--toc` | Show or hide the table of contents |
+| `--title <text>` | first H1 | Override document title |
+| `--author <text>` | empty | Document author |
+| `--date <text>` | empty | Document date |
+| `--keep-typ` | off | Keep the intermediate `.typ` file for debugging |
 
 ## Themes
 
-### `minimal` (default)
-
-Clean and print-friendly. White background, dark gray text, subtle ruled headings, gray code blocks.
+List all available themes:
 
 ```bash
-mdpdf input.md --theme minimal
+mdpdf themes
 ```
 
-### `purple`
+Built-in themes:
 
-Inspired by Typora's purple theme. White background, purple accent color, left-bar headings, dark code blocks with light text, purple table headers.
+- `minimal`: clean, restrained, print-friendly.
+- `purple`: purple accent, readable headings, styled code and tables.
+
+This repository also includes several imported Typora-inspired themes, including
+`purple-typora`. Imported themes are normal `.typ` files under `themes/`, so you
+can edit them by hand after generation.
+
+## Import Typora CSS Themes
+
+You can convert a Typora CSS theme into a Typst theme:
 
 ```bash
-mdpdf input.md --theme purple
+mdpdf import-theme "/Users/summer/Library/Application Support/abnerworks.Typora/themes/purple.css"
 ```
 
----
+If the CSS file is named `purple.css`, the generated theme is named
+`purple-typora` to avoid overwriting the built-in `purple` theme.
 
-## Configuration File
+Use a custom name:
 
-Create `mdpdf.config.json` in the same directory as your Markdown file:
+```bash
+mdpdf import-theme purple.css --name typora-purple
+```
+
+Then convert with it:
+
+```bash
+mdpdf input.md --theme typora-purple
+```
+
+The importer extracts CSS variables, common color aliases, fonts, inline code
+colors, code block colors, blockquote styling, table colors, and simple heading
+decorations such as centered H1 rules or H2 left borders. It is intentionally a
+best-effort converter: CSS is for browser layout, while Typst is for paginated
+typesetting.
+
+## Configuration
+
+Create `mdpdf.config.json` next to your Markdown file:
 
 ```json
 {
-  "theme": "purple",
+  "theme": "purple-typora",
   "paper": "a4",
   "toc": true,
-  "author": "Your Name",
-  "font": {
-    "body": "PingFang SC",
-    "code": "JetBrains Mono"
-  }
+  "author": "Summer",
+  "date": "2026-05-13"
 }
 ```
 
-CLI options override config file values.
-
----
+CLI options override the config file.
 
 ## Manual Page Control
 
-Insert HTML comments in your Markdown to control pagination:
+Force a page break:
 
 ```markdown
 <!-- pagebreak -->
 ```
 
-Forces a page break at that position.
+Add a weak keep-next hint:
 
 ```markdown
 <!-- keep-next -->
 ```
 
-Hints that the next block should stay on the same page as the current block.
-
----
-
 ## Examples
 
-Try the included examples:
-
 ```bash
-# Basic features demo
 mdpdf examples/basic.md --theme minimal
-
-# Purple theme
 mdpdf examples/basic.md --theme purple
-
-# Technical report
 mdpdf examples/technical-report.md --theme purple --title "架构设计方案"
 ```
-
----
 
 ## Development
 
 ```bash
-git clone https://github.com/yourname/md-to-beautiful-pdf.git
-cd md-to-beautiful-pdf
 npm install
 npm run build
-
-# Run CLI locally
-node dist/cli.js examples/basic.md --theme purple
+npm test
 ```
 
----
+Useful commands:
 
-## Project Philosophy
+```bash
+node dist/cli.js themes
+node dist/cli.js import-theme ./purple.css --name purple-typora
+node dist/cli.js examples/basic.md --theme purple-typora --keep-typ
+```
 
-- **Markdown for writing.** Keep your existing workflow in Typora or any editor.
-- **Typst for publishing.** Let the typesetting engine handle page breaks, headings, and spacing.
-- **Themes for style.** Visual themes are implemented in Typst, not CSS — so they work properly with paginated output.
+Before publishing an npm package, build first:
 
-This tool will never claim 100% compatibility with any Typora CSS theme. Instead, it aims for PDFs that look *professionally typeset* regardless of what Markdown editor you use.
+```bash
+npm run build
+npm pack
+```
 
----
+## Notes
+
+- Some systems may warn about missing fonts such as `Open Sans`,
+  `JetBrains Mono`, or `Noto Sans CJK SC`. Typst falls back to available fonts,
+  and the PDF can still be generated.
+- For the best Chinese output, install a good CJK font such as PingFang SC,
+  Noto Sans CJK SC, or Source Han Sans SC.
+- Very complex HTML embedded in Markdown is outside the current scope.
 
 ## License
 

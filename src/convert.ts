@@ -7,7 +7,7 @@ import chalk from 'chalk'
 import type { Config } from './config.js'
 import { preprocessMarkdown, extractTitle } from './markdown.js'
 import { buildTypstDocument } from './themes.js'
-import { checkPandoc, checkTypst, runPandoc, compileTypst } from './typst.js'
+import { checkPandoc, checkTypst, runPandoc, compileTypst, unwrapTableFigures } from './typst.js'
 
 export interface ConvertOptions {
   input: string
@@ -69,7 +69,7 @@ export async function convert(opts: ConvertOptions): Promise<string> {
 
     // Convert markdown → typst body via pandoc
     process.stdout.write(chalk.gray('  → Running pandoc...\n'))
-    const typstBody = await runPandoc(tempMdPath)
+    const typstBody = unwrapTableFigures(await runPandoc(tempMdPath))
 
     // Build full typst document with theme
     process.stdout.write(chalk.gray(`  → Applying theme: ${config.theme}\n`))
