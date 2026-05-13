@@ -4,7 +4,7 @@
   "description": "Turn Markdown into polished, well-paginated PDFs with Typst templates.",
   "type": "module",
   "bin": {
-    "mdpdf": "./dist/cli.js"
+    "mdpdf": "dist/cli.js"
   },
   "repository": {
     "type": "git",
