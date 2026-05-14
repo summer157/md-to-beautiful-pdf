@@ -1,4 +1,5 @@
 import { execa } from 'execa';
+import { relative } from 'path';
 export async function checkTypst() {
     try {
         await execa('typst', ['--version']);
@@ -113,12 +114,15 @@ function findMatchingParen(input, openIndex) {
     return -1;
 }
 export async function compileTypst(typPath, outputPath, rootDir) {
+    const rootRelativeTypPath = relative(rootDir, typPath);
+    const rootRelativeOutputPath = relative(rootDir, outputPath);
     await execa('typst', [
         'compile',
         '--root', rootDir,
-        typPath,
-        outputPath,
+        rootRelativeTypPath,
+        rootRelativeOutputPath,
     ], {
+        cwd: rootDir,
         stderr: 'inherit',
     });
 }

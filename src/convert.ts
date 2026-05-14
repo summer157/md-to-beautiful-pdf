@@ -1,5 +1,5 @@
 import { resolve, dirname, basename, extname, join } from 'path'
-import { readFileSync, writeFileSync, unlinkSync, existsSync } from 'fs'
+import { readFileSync, writeFileSync, unlinkSync, existsSync, mkdirSync } from 'fs'
 import { tmpdir } from 'os'
 import { randomBytes } from 'crypto'
 import chalk from 'chalk'
@@ -47,6 +47,7 @@ export async function convert(opts: ConvertOptions): Promise<string> {
   const outputPath = opts.output
     ? resolve(opts.output)
     : join(inputDir, `${inputBase}.pdf`)
+  const outputDir = dirname(outputPath)
 
   // Read and preprocess markdown
   const rawMd = readFileSync(inputPath, 'utf-8')
@@ -65,6 +66,7 @@ export async function convert(opts: ConvertOptions): Promise<string> {
   const tempTypPath = join(inputDir, `.mdpdf_output_${tempId}.typ`)
 
   try {
+    mkdirSync(outputDir, { recursive: true })
     writeFileSync(tempMdPath, processedMd, 'utf-8')
 
     // Convert markdown → typst body via pandoc

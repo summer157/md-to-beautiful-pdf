@@ -1,4 +1,5 @@
 import { execa } from 'execa'
+import { relative } from 'path'
 
 export async function checkTypst(): Promise<boolean> {
   try {
@@ -137,12 +138,16 @@ export async function compileTypst(
   outputPath: string,
   rootDir: string,
 ): Promise<void> {
+  const rootRelativeTypPath = relative(rootDir, typPath)
+  const rootRelativeOutputPath = relative(rootDir, outputPath)
+
   await execa('typst', [
     'compile',
     '--root', rootDir,
-    typPath,
-    outputPath,
+    rootRelativeTypPath,
+    rootRelativeOutputPath,
   ], {
+    cwd: rootDir,
     stderr: 'inherit',
   })
 }
