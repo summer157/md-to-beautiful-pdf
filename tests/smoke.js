@@ -5,12 +5,13 @@
  */
 
 import { execSync } from 'child_process'
-import { existsSync, unlinkSync } from 'fs'
+import { existsSync, mkdirSync, unlinkSync } from 'fs'
 import { resolve, dirname } from 'path'
 import { fileURLToPath } from 'url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
+const outputDir = resolve(root, 'examples/output')
 
 function run(cmd, opts = {}) {
   console.log(`  $ ${cmd}`)
@@ -27,6 +28,8 @@ function check(path, label) {
 }
 
 console.log('\n=== md-to-beautiful-pdf smoke test ===\n')
+
+mkdirSync(outputDir, { recursive: true })
 
 // Build
 console.log('1. Building TypeScript...')
