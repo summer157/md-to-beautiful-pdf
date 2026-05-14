@@ -27,7 +27,15 @@ export async function runPandoc(
     '--from', 'markdown+smart-citations',
     '--to', 'typst',
   ])
-  return result.stdout
+  return normalizeLegacyPandocTypst(result.stdout)
+}
+
+/**
+ * Older Pandoc Typst writers emitted legacy helpers such as `#blockquote[...]`.
+ * Newer writers emit `#quote(block: true)[...]`, which is what our themes target.
+ */
+function normalizeLegacyPandocTypst(typst: string): string {
+  return typst.replace(/#blockquote\s*\[/g, '#quote(block: true)[')
 }
 
 /**

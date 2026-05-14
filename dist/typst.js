@@ -24,7 +24,14 @@ export async function runPandoc(inputPath) {
         '--from', 'markdown+smart-citations',
         '--to', 'typst',
     ]);
-    return result.stdout;
+    return normalizeLegacyPandocTypst(result.stdout);
+}
+/**
+ * Older Pandoc Typst writers emitted legacy helpers such as `#blockquote[...]`.
+ * Newer writers emit `#quote(block: true)[...]`, which is what our themes target.
+ */
+function normalizeLegacyPandocTypst(typst) {
+    return typst.replace(/#blockquote\s*\[/g, '#quote(block: true)[');
 }
 /**
  * Replace Pandoc-generated fixed fractional column widths with smarter defaults.
